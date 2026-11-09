@@ -18,10 +18,13 @@ use Omnishow\Model\Image;
 use Omnishow\Model\ImageKind;
 use Omnishow\Model\Offer;
 use Omnishow\Model\OfferKind;
+use Omnishow\Model\Platform;
 use Omnishow\Model\Query;
 use Omnishow\Model\Rating;
 use Omnishow\Model\Role;
 use Omnishow\Model\Scheme;
+use Omnishow\Model\VideoLink;
+use Omnishow\Model\VideoRef;
 use Omnishow\Model\Work;
 use Omnishow\Model\WorkRef;
 use Omnishow\Model\WorkType;
@@ -110,7 +113,7 @@ final class TmdbProvider implements ProviderInterface, SearchInterface, LookupIn
         if (!$this->capabilities()->resolves($ref)) {
             throw NotSupportedException::ref($this->getTitle(), $ref);
         }
-        $parameters = ['language' => $language ?? $this->language, 'append_to_response' => 'credits,external_ids'];
+        $parameters = ['language' => $language ?? $this->language, 'append_to_response' => 'credits,external_ids,videos'];
         if (WorkType::Episode === $ref->type) {
             $found = $this->find($ref, 'tv_episode_results');
             $show = $found?->int('show_id');
@@ -224,6 +227,7 @@ final class TmdbProvider implements ProviderInterface, SearchInterface, LookupIn
             ratings: self::rating($data),
             url: null === $id ? null : 'https://www.themoviedb.org/'.($movie ? 'movie' : 'tv').'/'.$id,
             season: $movie ? null : $data->int('number_of_seasons'),
+            videos: self::videos($data),
         );
     }
 
@@ -250,7 +254,29 @@ final class TmdbProvider implements ProviderInterface, SearchInterface, LookupIn
             series: Identifiers::of(['tmdb' => $show]),
             season: $season,
             number: $number,
+            videos: self::videos($data),
         );
+    }
+
+    /**
+     * The trailers, teasers and clips TMDB names (append_to_response=videos,
+     * in the language asked): links to YouTube or Vimeo, whose provider gives
+     * the video's record. A site TMDB names that no Platform is, is left out.
+     *
+     * @return list<VideoLink>
+     */
+    private static function videos(Data $data): array
+    {
+        $links = [];
+        foreach ($data->list('videos.results') as $video) {
+            $platform = Platform::fromName((string) $video->string('site'));
+            $key = $video->string('key');
+            if (null !== $platform && null !== $key) {
+                $links[] = new VideoLink(new VideoRef($platform, $key), $video->string('name'), null === ($type = $video->string('type')) ? null : strtolower($type), $video->string('iso_639_1'), $video->bool('official'), $video->dateTime('published_at'));
+            }
+        }
+
+        return $links;
     }
 
     /** @return list<Credit> */

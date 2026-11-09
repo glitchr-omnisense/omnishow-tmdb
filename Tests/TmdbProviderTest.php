@@ -10,6 +10,7 @@ use Omnishow\Model\Offer;
 use Omnishow\Model\OfferKind;
 use Omnishow\Model\Query;
 use Omnishow\Model\Role;
+use Omnishow\Model\VideoLink;
 use Omnishow\Model\Work;
 use Omnishow\Model\WorkRef;
 use Omnishow\Model\WorkType;
@@ -73,6 +74,26 @@ final class TmdbProviderTest extends TestCase
         self::assertCount(2, self::provider(self::http(), ['cast' => 2])->work(WorkRef::tmdb(603))?->credits(Role::Cast) ?? []);
         self::assertSame('https://www.themoviedb.org/movie/603', $work->url);
         self::assertStringContainsString('append_to_response=credits%2Cexternal_ids', self::$requests[0]['url']);
+    }
+
+    /**
+     * TMDB's videos come with the record (append_to_response=videos) as links to their
+     * platform: the trailer is the official one, Vimeo's featurette a link too, and a site no
+     * Platform is (Dailymotion) is left out. The video's record is YouTube's provider's.
+     */
+    public function testAFilmsTrailersAreLinksToTheirPlatform(): void
+    {
+        $work = self::provider(self::http())->work(WorkRef::tmdb(603));
+
+        self::assertNotNull($work);
+        self::assertStringContainsString('append_to_response=credits%2Cexternal_ids%2Cvideos', self::$requests[0]['url']);
+        self::assertSame(['youtube:vKQi3bBA1y8', 'youtube:m8e-FF8MsqU', 'vimeo:76979871'], array_map(static fn (VideoLink $link) => (string) $link->ref, $work->videos));
+        $trailer = $work->trailer();
+        self::assertNotNull($trailer);
+        self::assertSame(['m8e-FF8MsqU', 'trailer', 'en', true, '2018-05-16T16:00:00+00:00'], [$trailer->ref->id, $trailer->kind, $trailer->language, $trailer->official, $trailer->published?->format(\DATE_ATOM)]);
+        self::assertSame('https://www.youtube-nocookie.com/embed/m8e-FF8MsqU', $trailer->ref->embedUrl(true));
+        self::assertSame('featurette', $work->videos[2]->kind);
+        self::assertSame([], self::provider(self::http())->work(WorkRef::tmdb(1920, WorkType::Series))?->videos);
     }
 
     public function testASeriesByItsTvdbNumberThroughFind(): void

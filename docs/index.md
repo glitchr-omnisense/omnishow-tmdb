@@ -9,7 +9,7 @@ episodes, and where to watch in a country. It runs over
 | Operation | TMDB API |
 |---|---|
 | search | `GET /search/movie`, `/search/tv`, `/search/multi` (no type) |
-| a film, a series | `GET /movie/{id}`, `/tv/{id}` with `append_to_response=credits,external_ids` |
+| a film, a series | `GET /movie/{id}`, `/tv/{id}` with `append_to_response=credits,external_ids,videos` |
 | by another register | `GET /find/{id}?external_source=imdb_id\|tvdb_id\|wikidata_id`, then the record |
 | an episode | `GET /find/{id}` (`tv_episode_results`), then `GET /tv/{id}/season/{n}/episode/{m}` |
 | a season | `GET /tv/{id}/season/{n}` |
@@ -98,9 +98,10 @@ titles, date, overview, poster, backdrop and TMDB rating; no IMDb number, no gen
 | `ratings` | `tmdb`, `vote_average` out of 10 with `vote_count`, when there are votes |
 | `url` | `https://www.themoviedb.org/movie/{id}` or `/tv/{id}` |
 | `season` | a series' `number_of_seasons` |
+| `videos` | `videos.results[]` (TMDB's [movie videos](https://developer.themoviedb.org/reference/movie-videos)): a `VideoLink` per video whose `site` is a `Platform` (YouTube, Vimeo; others left out) - `key` the video's identifier there, `name`, `type` in lower case as `kind` ("trailer", "teaser", "clip", "featurette"...), `iso_639_1`, `official`, `published_at`. TMDB answers the videos of the language asked only. `Work::trailer()` picks the official trailer; its record comes from the platform's provider (`Registry::findVideo()`, omnishow/youtube or omnishow/vimeo) |
 
 An episode: its name (else `Episode <n>`), `air_date`, runtime, overview, still (at `still`), its
-credits, TMDB rating, `series` the show's TMDB number, its season and number, its page
+credits, its videos, TMDB rating, `series` the show's TMDB number, its season and number, its page
 `https://www.themoviedb.org/tv/{show}/season/{n}/episode/{m}`.
 
 **A season.** One call for a series named by its TMDB number; another register is looked up first
@@ -162,7 +163,7 @@ The Matrix / The Matrix, 1999-03-31, 136 min
 The calls made:
 
 ```
-GET https://api.themoviedb.org/3/movie/603?append_to_response=credits%2Cexternal_ids&language=fr-FR
+GET https://api.themoviedb.org/3/movie/603?append_to_response=credits%2Cexternal_ids%2Cvideos&language=fr-FR
 GET https://api.themoviedb.org/3/movie/603/watch/providers
 ```
 

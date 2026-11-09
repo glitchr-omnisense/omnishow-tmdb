@@ -2,6 +2,16 @@
 
 ## Unreleased (1.x)
 
+### Changed
+- omnishow/tmdb continues omnifilm/tmdb (merged into omnisense/omnishow on 2026-11-09): the
+  namespace `Omnishow\Tmdb\`, the requirement `omnisense/omnishow`.
+
+### Added
+- A record's videos: `append_to_response=credits,external_ids,videos`, each video whose `site` is
+  YouTube or Vimeo a `VideoLink` in `Work::$videos` (its key, name, type as kind, language, official,
+  published date), so that `Work::trailer()` names the trailer and omnishow/youtube or
+  omnishow/vimeo gives its record. A site no `Platform` is (Dailymotion...) is left out.
+
 ### Fixed
 - A refusal (`ProviderException`, TMDB's 401) keeps no argument in its trace: the closure there held
   the provider, its client and its key or token.

@@ -4,9 +4,11 @@
 host, over [php-tmdb/api](https://github.com/php-tmdb/api):
 
 - **search** of films, series or both (`/search/movie`, `/search/tv`, `/search/multi`);
-- **a film's or a series' record** with its credits and cross identifiers in one call
-  (`append_to_response=credits,external_ids`), by its TMDB number or, through `/find`, by its
-  IMDb, TheTVDB or Wikidata identifier; **an episode** by its IMDb or TheTVDB number;
+- **a film's or a series' record** with its credits, cross identifiers and videos in one call
+  (`append_to_response=credits,external_ids,videos`), by its TMDB number or, through `/find`, by
+  its IMDb, TheTVDB or Wikidata identifier; **an episode** by its IMDb or TheTVDB number;
+- **its trailers and clips** as links to the platform that hosts them (`Work::$videos`,
+  `Work::trailer()`): YouTube or Vimeo, whose omnishow provider gives the video's record;
 - **a season's episodes**; **where to watch** in a country (TMDB's watch providers).
 
 ```php
