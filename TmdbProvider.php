@@ -1,32 +1,32 @@
 <?php
 
-namespace Omnifilm\Tmdb;
+namespace Omnishow\Tmdb;
 
-use Omnifilm\AvailabilityInterface;
-use Omnifilm\Capabilities;
-use Omnifilm\EpisodesInterface;
-use Omnifilm\Exception\NotSupportedException;
-use Omnifilm\Exception\ProviderException;
-use Omnifilm\Exception\UnreachableException;
-use Omnifilm\Http\Data;
-use Omnifilm\Http\JsonClient;
-use Omnifilm\Http\Redaction;
-use Omnifilm\LookupInterface;
-use Omnifilm\Model\Credit;
-use Omnifilm\Model\Identifiers;
-use Omnifilm\Model\Image;
-use Omnifilm\Model\ImageKind;
-use Omnifilm\Model\Offer;
-use Omnifilm\Model\OfferKind;
-use Omnifilm\Model\Query;
-use Omnifilm\Model\Rating;
-use Omnifilm\Model\Role;
-use Omnifilm\Model\Scheme;
-use Omnifilm\Model\Work;
-use Omnifilm\Model\WorkRef;
-use Omnifilm\Model\WorkType;
-use Omnifilm\ProviderInterface;
-use Omnifilm\SearchInterface;
+use Omnishow\AvailabilityInterface;
+use Omnishow\Capabilities;
+use Omnishow\EpisodesInterface;
+use Omnishow\Exception\NotSupportedException;
+use Omnishow\Exception\ProviderException;
+use Omnishow\Exception\UnreachableException;
+use Omnishow\Http\Data;
+use Omnishow\Http\JsonClient;
+use Omnishow\Http\Redaction;
+use Omnishow\LookupInterface;
+use Omnishow\Model\Credit;
+use Omnishow\Model\Identifiers;
+use Omnishow\Model\Image;
+use Omnishow\Model\ImageKind;
+use Omnishow\Model\Offer;
+use Omnishow\Model\OfferKind;
+use Omnishow\Model\Query;
+use Omnishow\Model\Rating;
+use Omnishow\Model\Role;
+use Omnishow\Model\Scheme;
+use Omnishow\Model\Work;
+use Omnishow\Model\WorkRef;
+use Omnishow\Model\WorkType;
+use Omnishow\ProviderInterface;
+use Omnishow\SearchInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Tmdb\Client;
@@ -172,7 +172,7 @@ final class TmdbProvider implements ProviderInterface, SearchInterface, LookupIn
 
     /**
      * A call of php-tmdb/api: its array read through Data, a 404 as null,
-     * its failures as omnifilm's exceptions.
+     * its failures as omnishow's exceptions.
      *
      * @param \Closure(): mixed $call
      */

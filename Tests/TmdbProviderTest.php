@@ -1,20 +1,20 @@
 <?php
 
-namespace Omnifilm\Tmdb\Tests;
+namespace Omnishow\Tmdb\Tests;
 
-use Omnifilm\Exception\InvalidConfigException;
-use Omnifilm\Exception\ProviderException;
-use Omnifilm\Model\Credit;
-use Omnifilm\Model\ImageKind;
-use Omnifilm\Model\Offer;
-use Omnifilm\Model\OfferKind;
-use Omnifilm\Model\Query;
-use Omnifilm\Model\Role;
-use Omnifilm\Model\Work;
-use Omnifilm\Model\WorkRef;
-use Omnifilm\Model\WorkType;
-use Omnifilm\Tmdb\TmdbFactory;
-use Omnifilm\Tmdb\TmdbProvider;
+use Omnishow\Exception\InvalidConfigException;
+use Omnishow\Exception\ProviderException;
+use Omnishow\Model\Credit;
+use Omnishow\Model\ImageKind;
+use Omnishow\Model\Offer;
+use Omnishow\Model\OfferKind;
+use Omnishow\Model\Query;
+use Omnishow\Model\Role;
+use Omnishow\Model\Work;
+use Omnishow\Model\WorkRef;
+use Omnishow\Model\WorkType;
+use Omnishow\Tmdb\TmdbFactory;
+use Omnishow\Tmdb\TmdbProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
@@ -23,7 +23,7 @@ use Symfony\Component\HttpClient\Response\MockResponse;
  * TMDB's answers shaped after its API reference (developer.themoviedb.org),
  * values written by hand: no account was used, nothing here was captured
  * from TMDB itself. What is checked is the way through php-tmdb/api - the
- * requests it makes, how its arrays become omnifilm's records.
+ * requests it makes, how its arrays become omnishow's records.
  */
 final class TmdbProviderTest extends TestCase
 {
@@ -136,7 +136,7 @@ final class TmdbProviderTest extends TestCase
         try {
             self::provider($http, ['api_key' => 'not-a-real-tmdb-key', 'token' => null])->work(WorkRef::tmdb(603));
             self::fail('no exception');
-        } catch (\Omnifilm\Exception\UnreachableException $e) {
+        } catch (\Omnishow\Exception\UnreachableException $e) {
             self::assertStringNotContainsString('not-a-real-tmdb-key', $e->getMessage());
             self::assertStringNotContainsString('api_key', $e->getMessage());
             self::assertStringContainsString('GET /3/movie/603', $e->getMessage());
@@ -160,7 +160,7 @@ final class TmdbProviderTest extends TestCase
                 try {
                     self::provider($http, $options)->work(WorkRef::tmdb(603));
                     self::fail('no exception');
-                } catch (\Omnifilm\Exception\UnreachableException $e) {
+                } catch (\Omnishow\Exception\UnreachableException $e) {
                     self::assertNotNull($e->getPrevious());
                     for ($one = $e; null !== $one; $one = $one->getPrevious()) {
                         foreach (['not-a-real-tmdb-key', 'not-a-real-tmdb-token'] as $secret) {
@@ -189,7 +189,7 @@ final class TmdbProviderTest extends TestCase
                 try {
                     self::provider($http, $options)->work(WorkRef::tmdb(603));
                     self::fail('no exception');
-                } catch (\Omnifilm\Exception\ProviderException $e) {
+                } catch (\Omnishow\Exception\ProviderException $e) {
                     foreach (['not-a-real-tmdb-key', 'not-a-real-tmdb-token'] as $secret) {
                         self::assertFalse(str_contains($e->getMessage(), $secret), $e->getMessage());
                         self::assertFalse(str_contains(print_r($e->getTrace(), true), $secret), 'the trace holds '.$secret);
@@ -216,7 +216,7 @@ final class TmdbProviderTest extends TestCase
 
     /**
      * Symfony's MockHttpClient (Psr18Client reads the body as a stream),
-     * answering by route as omnifilm's RecordedHttpClient does, the
+     * answering by route as omnishow's RecordedHttpClient does, the
      * requests kept in $requests.
      *
      * @param ?array<string, array{0: int, 1: string}> $routes

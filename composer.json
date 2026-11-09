@@ -1,9 +1,9 @@
 {
-    "name": "omnifilm/tmdb",
+    "name": "omnishow/tmdb",
     "type": "library",
-    "description": "Omnifilm's The Movie Database, under any PHP host, over php-tmdb/api: search, a film's or a series' record with its cast, crew and identifiers across registers in one call, an episode by its IMDb or TheTVDB number, a season's episodes, and where to watch in a country (JustWatch's data); php-tmdb's client runs over the application's HTTP client and a PSR-14 dispatcher of its own.",
-    "keywords": ["tmdb", "themoviedb", "film", "movie", "tv", "series", "episode", "watch-providers", "framework-agnostic", "omnifilm"],
-    "homepage": "https://github.com/glitchr-omnisense/omnifilm-tmdb",
+    "description": "Omnishow's The Movie Database, under any PHP host, over php-tmdb/api: search, a film's or a series' record with its cast, crew and identifiers across registers in one call, an episode by its IMDb or TheTVDB number, a season's episodes, and where to watch in a country (JustWatch's data); php-tmdb's client runs over the application's HTTP client and a PSR-14 dispatcher of its own.",
+    "keywords": ["tmdb", "themoviedb", "film", "movie", "tv", "series", "episode", "watch-providers", "framework-agnostic", "omnishow"],
+    "homepage": "https://github.com/glitchr-omnisense/omnishow-tmdb",
     "license": "MIT",
     "authors": [
         {
@@ -14,7 +14,7 @@
     "require": {
         "php": ">=8.2",
         "nyholm/psr7": "^1.8",
-        "omnisense/omnifilm": "^1.0@dev",
+        "omnisense/omnishow": "^1.0@dev",
         "php-tmdb/api": "^4.1",
         "psr/event-dispatcher": "^1.0",
         "symfony/http-client": "^6.4|^7.0|^8.0"
@@ -28,7 +28,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Omnifilm\\Tmdb\\": ""
+            "Omnishow\\Tmdb\\": ""
         },
         "exclude-from-classmap": [
             "/Tests/"
@@ -36,7 +36,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Omnifilm\\Tmdb\\Tests\\": "Tests/"
+            "Omnishow\\Tmdb\\Tests\\": "Tests/"
         }
     },
     "extra": {

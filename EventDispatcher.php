@@ -1,6 +1,6 @@
 <?php
 
-namespace Omnifilm\Tmdb;
+namespace Omnishow\Tmdb;
 
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\EventDispatcher\StoppableEventInterface;

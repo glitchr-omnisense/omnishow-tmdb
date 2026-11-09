@@ -1,12 +1,12 @@
 <?php
 
-namespace Omnifilm\Tmdb;
+namespace Omnishow\Tmdb;
 
 use Nyholm\Psr7\Factory\Psr17Factory;
-use Omnifilm\Config;
-use Omnifilm\Exception\InvalidConfigException;
-use Omnifilm\ProviderFactory;
-use Omnifilm\ProviderInterface;
+use Omnishow\Config;
+use Omnishow\Exception\InvalidConfigException;
+use Omnishow\ProviderFactory;
+use Omnishow\ProviderInterface;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpClient\Psr18Client;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -39,9 +39,9 @@ final class TmdbFactory extends ProviderFactory
     protected function populate(Config $c): void
     {
         $c->defaults([
-            'omnifilm.factory_name' => 'tmdb',
-            'omnifilm.factory_title' => 'The Movie Database',
-            'omnifilm.required_options' => [],
+            'omnishow.factory_name' => 'tmdb',
+            'omnishow.factory_title' => 'The Movie Database',
+            'omnishow.required_options' => [],
             'token' => null,
             'api_key' => null,
             'language' => 'en-US',

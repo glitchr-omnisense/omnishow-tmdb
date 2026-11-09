@@ -1,11 +1,11 @@
 <?php
 
-namespace Omnifilm\Tmdb\Tests;
+namespace Omnishow\Tmdb\Tests;
 
-use Omnifilm\Testing\BareTestCase;
-use Omnifilm\Tmdb\TmdbProvider;
+use Omnishow\Testing\BareTestCase;
+use Omnishow\Tmdb\TmdbProvider;
 
-/** omnifilm/tmdb's classes load with omnisense/omnifilm, php-tmdb/api and the PSR interfaces alone. */
+/** omnishow/tmdb's classes load with omnisense/omnishow, php-tmdb/api and the PSR interfaces alone. */
 final class BareTest extends BareTestCase
 {
     protected static function entryClass(): string

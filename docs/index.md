@@ -1,6 +1,6 @@
-# omnifilm/tmdb
+# omnishow/tmdb
 
-The Movie Database for [omnisense/omnifilm](https://github.com/glitchr-omnisense/omnifilm): search,
+The Movie Database for [omnisense/omnishow](https://github.com/glitchr-omnisense/omnishow): search,
 a film's or a series' record with its credits and cross identifiers, an episode, a season's
 episodes, and where to watch in a country. It runs over
 [php-tmdb/api](https://github.com/php-tmdb/api) (its raw API calls, not its models) on TMDB's API v3,
@@ -20,10 +20,10 @@ TMDB has no sandbox. Pictures are served from `https://image.tmdb.org/t/p/{size}
 ## Installation
 
 ```sh
-composer require omnifilm/tmdb
+composer require omnishow/tmdb
 ```
 
-Requires PHP 8.2, `omnisense/omnifilm` (1.x), `php-tmdb/api` (^4.1), `nyholm/psr7` (^1.8),
+Requires PHP 8.2, `omnisense/omnishow` (1.x), `php-tmdb/api` (^4.1), `nyholm/psr7` (^1.8),
 `psr/event-dispatcher` (^1.0) and `symfony/http-client` (6.4, 7 or 8). php-tmdb/api requires
 `php-http/discovery`, a Composer plugin it does not need here (every factory is passed): leaving
 it disabled is enough -
@@ -33,7 +33,7 @@ it disabled is enough -
 ```
 
 How it is wired: the factory gives php-tmdb's `Client` the application's HTTP client through
-Symfony's `Psr18Client`, nyholm/psr7's factories, and `Omnifilm\Tmdb\EventDispatcher` - a PSR-14
+Symfony's `Psr18Client`, nyholm/psr7's factories, and `Omnishow\Tmdb\EventDispatcher` - a PSR-14
 dispatcher of this package's own (listeners by the event's own class, in the order added, until one
 stops the event), which keeps `symfony/event-dispatcher` out. Five php-tmdb listeners are added: the
 request listener, the token, `Accept: application/json`, `Content-Type: application/json` and
@@ -123,8 +123,8 @@ A film's record and where to watch it in France:
 
 require __DIR__.'/vendor/autoload.php';
 
-use Omnifilm\Model\WorkRef;
-use Omnifilm\Tmdb\TmdbFactory;
+use Omnishow\Model\WorkRef;
+use Omnishow\Tmdb\TmdbFactory;
 use Symfony\Component\HttpClient\HttpClient;
 
 $tmdb = (new TmdbFactory(HttpClient::create()))->create(['token' => getenv('TMDB_TOKEN'), 'language' => 'fr-FR']);
@@ -170,11 +170,11 @@ The values are the test answers', not TMDB's: no TMDB account was used. In Symfo
 
 ```yaml
 services:
-    Omnifilm\Tmdb\TmdbFactory:
+    Omnishow\Tmdb\TmdbFactory:
         arguments: ['@http_client']
-    Omnifilm\Registry:
+    Omnishow\Registry:
         arguments:
-            $factories: ['@Omnifilm\Tmdb\TmdbFactory']
+            $factories: ['@Omnishow\Tmdb\TmdbFactory']
             $config:
                 tmdb: { factory: tmdb, options: { token: '%env(TMDB_TOKEN)%', language: fr-FR } }
 ```

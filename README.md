@@ -1,6 +1,6 @@
-# omnifilm/tmdb
+# omnishow/tmdb
 
-[omnisense/omnifilm](https://github.com/glitchr-omnisense/omnifilm)'s The Movie Database, under any PHP
+[omnisense/omnishow](https://github.com/glitchr-omnisense/omnishow)'s The Movie Database, under any PHP
 host, over [php-tmdb/api](https://github.com/php-tmdb/api):
 
 - **search** of films, series or both (`/search/movie`, `/search/tv`, `/search/multi`);
@@ -10,7 +10,7 @@ host, over [php-tmdb/api](https://github.com/php-tmdb/api):
 - **a season's episodes**; **where to watch** in a country (TMDB's watch providers).
 
 ```php
-use Omnifilm\Tmdb\TmdbFactory;
+use Omnishow\Tmdb\TmdbFactory;
 
 $tmdb = (new TmdbFactory($httpClient))->create(['token' => getenv('TMDB_TOKEN'), 'language' => 'fr-FR']);
 $matrix = $tmdb->work(WorkRef::imdb('tt0133093'));
@@ -23,10 +23,10 @@ in the query); `language` ("en-US"); `images` (the image server), `poster` ("w50
 
 ## Why php-tmdb/api, and how it is wired
 
-Plan 0 settled that `php-tmdb/api` serves inside omnifilm/tmdb. Found on 2026-10-24: MIT, kept up
+Plan 0 settled that `php-tmdb/api` serves inside omnishow/tmdb. Found on 2026-10-24: MIT, kept up
 on GitHub (its 4.1 branch accepts Symfony 8 since 2026-05), its last release 4.1.0 (2022-06), which
 installs with PHP 8.4 and Symfony 8. Only its raw API calls are used (its arrays, not its models):
-the record is omnifilm's. It needs a PSR-18 client, PSR-17 factories and a PSR-14 dispatcher with
+the record is omnishow's. It needs a PSR-18 client, PSR-17 factories and a PSR-14 dispatcher with
 five listeners: the factory gives it the application's client through Symfony's `Psr18Client`,
 nyholm/psr7's factories, and `EventDispatcher`, this package's own dispatcher (no
 symfony/event-dispatcher). php-tmdb requires php-http/discovery, a Composer plugin it does not need
