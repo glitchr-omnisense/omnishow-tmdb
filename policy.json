@@ -1,0 +1,48 @@
+{
+    "$schema": "https://github.com/glitchr-omnisense/contracts/blob/1.x/resources/usage-policy.schema.json",
+    "provider": "tmdb",
+    "rateLimits": [
+        {
+            "max": 40,
+            "window": "second",
+            "scope": "application",
+            "operations": [],
+            "note": "\"Somewhere in the 40 requests per second range\" (developer.themoviedb.org/docs/rate-limiting), which TMDB may change; a 429 is honoured. No per-IP or connection limit is stated."
+        }
+    ],
+    "rights": {
+        "commercial": "contract",
+        "openSourceRequired": null,
+        "caching": {
+            "permission": "allowed",
+            "maxTtl": 15552000
+        },
+        "storage": "forbidden",
+        "redistribution": "forbidden",
+        "attribution": {
+            "required": true,
+            "text": "This product uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB.",
+            "url": "https://www.themoviedb.org/",
+            "where": [
+                "display",
+                "credits"
+            ]
+        },
+        "licence": null
+    },
+    "requirements": {
+        "key": true,
+        "userAgent": {
+            "required": false,
+            "pattern": null
+        }
+    },
+    "provenance": {
+        "terms": "https://www.themoviedb.org/api-terms-of-use",
+        "policy": "https://developer.themoviedb.org/docs/rate-limiting",
+        "verifiedAt": "2026-11-10",
+        "declaredBy": "maintainer",
+        "contact": "https://status.themoviedb.org",
+        "notes": "Terms of 2023-10-20. Commercial use \"only permitted under a separate written agreement\" with TMDB (2.A; training AI counts as commercial; sales@themoviedb.org); free for non-commercial use with the credit. Nothing cached longer than 6 months (1.C), everything deleted when the licence ends (1.D); no selling, sublicensing or derivatives. The credit is shown prominently with an approved TMDB logo, less prominent than the application's own (themoviedb.org/about/logos-attribution). Where to watch (watch providers) must credit JustWatch as its source. The data is TMDB's own (no open licence)."
+    }
+}

@@ -18,6 +18,7 @@ use Tmdb\Event\Listener\Request\ContentTypeJsonRequestListener;
 use Tmdb\Event\Listener\Request\UserAgentRequestListener;
 use Tmdb\Event\Listener\RequestListener;
 use Tmdb\Event\RequestEvent;
+use Tmdb\Event\ResponseEvent;
 use Tmdb\Token\Api\ApiToken;
 use Tmdb\Token\Api\BearerToken;
 
@@ -80,6 +81,11 @@ final class TmdbFactory extends ProviderFactory
         $dispatcher->listen(BeforeRequestEvent::class, new AcceptJsonRequestListener());
         $dispatcher->listen(BeforeRequestEvent::class, new ContentTypeJsonRequestListener());
         $dispatcher->listen(BeforeRequestEvent::class, new UserAgentRequestListener());
+        // Every answer's Retry-After and RateLimit fields read into the provider's wait (a 429 is read by TmdbProvider).
+        $backoff = $c->backoff();
+        if (null !== $backoff) {
+            $dispatcher->listen(ResponseEvent::class, static fn (ResponseEvent $event) => $backoff->observe($event->getResponse()->getStatusCode(), TmdbProvider::headers($event->getResponse())));
+        }
 
         return new TmdbProvider($client, (string) $c->string('language'), [
             'base' => (string) $c->string('images'),
@@ -87,6 +93,6 @@ final class TmdbFactory extends ProviderFactory
             'backdrop' => (string) $c->string('backdrop'),
             'still' => (string) $c->string('still'),
             'logo' => (string) $c->string('logo'),
-        ], $c->int('cast', 20));
+        ], $c->int('cast', 20), $backoff);
     }
 }

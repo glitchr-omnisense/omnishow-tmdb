@@ -7,6 +7,13 @@
   namespace `Omnishow\Tmdb\`, the requirement `omnisense/omnishow`.
 
 ### Added
+- TMDB's usage policy declared as data in `policy.json` (omnisense/contracts' schema, read on
+  2026-11-10): about 40 requests a second, commercial use under a written agreement, nothing cached
+  longer than 6 months, TMDB's credit and JustWatch's. `TmdbProvider` implements
+  `DeclaresUsagePolicyInterface` and takes the provider's Backoff (its last, optional argument): no
+  php-tmdb/api call goes out while TMDB asked to wait, a 429 is a `UsageLimitReachedException` with
+  its `Retry-After`, every answer's RateLimit fields are read (a `ResponseEvent` listener).
+  `composer.json` names the policy (`extra.omnisense.policy`) and requires `omnisense/contracts`.
 - A record's videos: `append_to_response=credits,external_ids,videos`, each video whose `site` is
   YouTube or Vimeo a `VideoLink` in `Work::$videos` (its key, name, type as kind, language, official,
   published date), so that `Work::trailer()` names the trailer and omnishow/youtube or

@@ -14,6 +14,7 @@
     "require": {
         "php": ">=8.2",
         "nyholm/psr7": "^1.8",
+        "omnisense/contracts": "^1.0@dev",
         "omnisense/omnishow": "^1.0@dev",
         "php-tmdb/api": "^4.1",
         "psr/event-dispatcher": "^1.0",
@@ -40,6 +41,9 @@
         }
     },
     "extra": {
+        "omnisense": {
+            "policy": "policy.json"
+        },
         "branch-alias": {
             "dev-1.x": "1.x-dev"
         }

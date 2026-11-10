@@ -206,6 +206,20 @@ written by hand. `Tests/BareTest.php` loads every class with the package's requi
 
 Not verified: no TMDB key was used; nothing was called on TMDB.
 
+## Usage policy
+
+The package declares TMDB's usage policy as data, in [policy.json](../policy.json)
+(omnisense/contracts' schema, read at its sources on 2026-11-10): rate limits about 40 requests a
+second ("somewhere in the 40 requests per second range", which TMDB may change); commercial use only
+under a written agreement with TMDB, nothing cached longer than 6 months, no selling or
+sublicensing, TMDB's credit and an approved logo shown prominently, JustWatch credited for where to
+watch. Through omnishow's registry every call is held to it: a call over the site's own limit is
+refused before it reaches TMDB; php-tmdb/api's requests wait while TMDB asked to (its events feed
+the provider's Backoff), a 429 and its `Retry-After` hold every next call until the wait is over
+(`UsageLimitReachedException`), and a site may tighten the policy in its configuration (`'policy' =>
+[...]`), never loosen it. What the terms do not say is declared unknown; the sources and the details
+are in the file's `provenance`.
+
 ## Responsibility
 
 An independent, unofficial client, affiliated with TMDB in no way. Whoever runs it complies with

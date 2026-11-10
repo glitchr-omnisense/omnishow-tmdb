@@ -2,6 +2,10 @@
 
 namespace Omnishow\Tmdb;
 
+use Omnisense\Contracts\Policy\Backoff;
+use Omnisense\Contracts\Policy\DeclaresUsagePolicyInterface;
+use Omnisense\Contracts\Policy\UsageLimitReached;
+use Omnisense\Contracts\Policy\UsagePolicy;
 use Omnishow\AvailabilityInterface;
 use Omnishow\Capabilities;
 use Omnishow\EpisodesInterface;
@@ -32,6 +36,7 @@ use Omnishow\ProviderInterface;
 use Omnishow\SearchInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Tmdb\Client;
 use Tmdb\Exception\TmdbApiException;
 
@@ -40,16 +45,23 @@ use Tmdb\Exception\TmdbApiException;
  * its models): search, a film's or a series' record with its credits and
  * cross identifiers in one call (append_to_response), an episode found by
  * its IMDb or TheTVDB number, a season's episodes, and where to watch
- * (TMDB's watch providers, JustWatch's data).
+ * (TMDB's watch providers, JustWatch's data). Given the provider's Backoff
+ * (the factory's), no call goes out while TMDB asked to wait, and a 429 is
+ * a UsageLimitReachedException with its Retry-After.
  */
-final class TmdbProvider implements ProviderInterface, SearchInterface, LookupInterface, EpisodesInterface, AvailabilityInterface
+final class TmdbProvider implements ProviderInterface, SearchInterface, LookupInterface, EpisodesInterface, AvailabilityInterface, DeclaresUsagePolicyInterface
 {
+    /** TMDB's usage policy, as its terms read on the day it says (provenance.verifiedAt). */
+    public const POLICY = __DIR__.'/policy.json';
+
+    private static ?UsagePolicy $policy = null;
+
     private const FIND = [Scheme::Imdb->value => 'imdb_id', Scheme::Tvdb->value => 'tvdb_id', Scheme::Wikidata->value => 'wikidata_id'];
     private const OFFERS = ['flatrate' => OfferKind::Stream, 'free' => OfferKind::Free, 'ads' => OfferKind::Ads, 'rent' => OfferKind::Rent, 'buy' => OfferKind::Buy];
     private const COMPOSERS = ['Original Music Composer', 'Music', 'Composer'];
 
     /** @param array{base: string, poster: string, backdrop: string, still: string, logo: string} $images */
-    public function __construct(private readonly Client $client, private readonly string $language, private readonly array $images, private readonly int $cast = 20)
+    public function __construct(private readonly Client $client, private readonly string $language, private readonly array $images, private readonly int $cast = 20, private readonly ?Backoff $backoff = null)
     {
     }
 
@@ -61,6 +73,11 @@ final class TmdbProvider implements ProviderInterface, SearchInterface, LookupIn
     public function getTitle(): string
     {
         return 'The Movie Database';
+    }
+
+    public function usagePolicy(): UsagePolicy
+    {
+        return self::$policy ??= UsagePolicy::fromFile(self::POLICY);
     }
 
     public function capabilities(): Capabilities
@@ -81,6 +98,7 @@ final class TmdbProvider implements ProviderInterface, SearchInterface, LookupIn
             // The wording TMDB's API terms ask for, with TMDB's logo less prominent than the application's own.
             attribution: 'This product uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB. Where to watch: data from JustWatch.',
             terms: ['https://www.themoviedb.org/api-terms-of-use', 'https://developer.themoviedb.org/docs/faq', 'https://www.justwatch.com'],
+            policy: $this->usagePolicy(),
         );
     }
 
@@ -182,11 +200,21 @@ final class TmdbProvider implements ProviderInterface, SearchInterface, LookupIn
     private function call(\Closure $call): ?Data
     {
         try {
+            $this->backoff?->clear();
+
             return Data::of($call());
+        } catch (UsageLimitReached $e) {
+            throw Redaction::withoutArguments($e);
         } catch (TmdbApiException $e) {
             $status = $e->getResponse()->getStatusCode();
             if (404 === $status || 34 === $e->getCode()) {
                 return null;
+            }
+            try {
+                // A 429 (or a 503 asking to wait): the wait kept for every next call, the 429 thrown as the family's limit.
+                $this->backoff?->observe($status, self::headers($e->getResponse()));
+            } catch (UsageLimitReached $limit) {
+                throw Redaction::withoutArguments($limit);
             }
             // No trace argument: the closure there holds this provider, its client and its key or token.
             throw Redaction::withoutArguments(ProviderException::answered('TMDB', 'GET '.$e->getRequest()->getUri()->getPath(), $status, $e->getMessage()));
@@ -200,6 +228,23 @@ final class TmdbProvider implements ProviderInterface, SearchInterface, LookupIn
 
             throw Redaction::withoutArguments(new UnreachableException('TMDB could not be reached'.$what.': '.JsonClient::reason($e->getMessage()), 0, Redaction::copy($e, $secrets)));
         }
+    }
+
+    /**
+     * A PSR-7 answer's header fields as the Backoff reads them: lowercase names, a list of values each.
+     *
+     * @internal
+     *
+     * @return array<string, list<string>>
+     */
+    public static function headers(ResponseInterface $response): array
+    {
+        $headers = [];
+        foreach ($response->getHeaders() as $name => $values) {
+            $headers[strtolower((string) $name)] = array_values(array_map('strval', $values));
+        }
+
+        return $headers;
     }
 
     private function work0(Data $data, WorkType $type): Work
