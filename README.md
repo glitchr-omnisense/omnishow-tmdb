@@ -23,6 +23,18 @@ Options: `token` (the API Read Access Token, sent as a Bearer header) or `api_ke
 in the query); `language` ("en-US"); `images` (the image server), `poster` ("w500"),
 `backdrop` ("w1280"), `still` ("w300"), `logo` ("w92"); `cast` (20).
 
+## Install
+
+```sh
+composer require omnishow/tmdb
+```
+
+It requires `omnisense/omnishow` `^1.0`, installed with it. A real call needs: **a TMDB account**:
+its API read access token, or its API key. With no account, its tests run on recorded answers (a
+`MockHttpClient`), and
+[omnisense/omnishow](https://github.com/glitchr-omnisense/omnishow#install-and-a-first-call)'s
+README has a first call that runs without one.
+
 ## Why php-tmdb/api, and how it is wired
 
 Plan 0 settled that `php-tmdb/api` serves inside omnishow/tmdb. Found on 2026-10-24: MIT, kept up
